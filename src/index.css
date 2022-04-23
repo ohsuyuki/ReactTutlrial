@@ -48,3 +48,11 @@ ol, ul {
 .game-info {
   margin-left: 20px;
 }
+
+.current-button {
+  background-color: lightblue;
+}
+
+.prev-button {
+  background-color: white;
+}
