@@ -66,7 +66,7 @@ class Game extends React.Component {
 
   handleClick(i) {
     const history = this.state.history.slice(0, this.state.currentStepNumber + 1);
-    const current = history[history.length - 1];
+    const current = history.find(element => element.stepNumber === this.state.currentStepNumber)
     const squares = current.squares.slice();
 
     if(calculateWinner(squares) || squares[i]) {
@@ -74,16 +74,15 @@ class Game extends React.Component {
     }
 
     squares[i] = this.state.xIsNext ? 'X' : 'O';
-    const coord = i;
     this.setState({
       history: history.concat([
         {
           squares: squares,
-          coord: coord,
-          stepNumber: history.length,
+          coord: i,
+          stepNumber: this.state.currentStepNumber + 1,
         }
       ]),
-      currentStepNumber: history.length,
+      currentStepNumber: this.state.currentStepNumber + 1,
       xIsNext: !this.state.xIsNext,
     });
   }
@@ -121,7 +120,7 @@ class Game extends React.Component {
       );
     });
 
-    const winner = calculateWinner(current);
+    const winner = calculateWinner(current.squares);
     let status;
     if(winner) {
       status = `Winner: ${winner}`;
@@ -129,7 +128,6 @@ class Game extends React.Component {
       status = `Next player: ${this.state.xIsNext ? 'X' : 'O'}`;
     }
 
-    console.log(current);
     return (
       <div className="game">
         <div className="game-board">
