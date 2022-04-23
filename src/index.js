@@ -55,16 +55,17 @@ class Game extends React.Component {
       history: [
         {
           squares: Array(9).fill(null),
-          coord: null
+          coord: null,
+          stepNumber: 0
         }
       ],
-      stepNumber: 0,
+      currentStepNumber: 0,
       xIsNext: true,
     };
   }
 
   handleClick(i) {
-    const history = this.state.history.slice(0, this.state.stepNumber + 1);
+    const history = this.state.history.slice(0, this.state.currentStepNumber + 1);
     const current = history[history.length - 1];
     const squares = current.squares.slice();
 
@@ -73,40 +74,48 @@ class Game extends React.Component {
     }
 
     squares[i] = this.state.xIsNext ? 'X' : 'O';
-    const coord = i
+    const coord = i;
     this.setState({
       history: history.concat([
         {
           squares: squares,
           coord: coord,
+          stepNumber: history.length,
         }
       ]),
-      stepNumber: history.length,
+      currentStepNumber: history.length,
       xIsNext: !this.state.xIsNext,
     });
   }
 
   jumpTo(step) {
     this.setState({
-      stepNumber: step,
+      currentStepNumber: step,
       xIsNext: (step % 2) === 0,
+    })
+  }
+
+  sortMovves() {
+    let history = this.state.history;
+    this.setState({
+      history: history.reverse()
     })
   }
 
   render() {
     const history = this.state.history;
-    const current = history[this.state.stepNumber];
+    const current = history.find(element => element.stepNumber === this.state.currentStepNumber)
 
-    const moves = history.map((step, move) => {
-      const desc = move ?
-        `Go to move #${move}` :
-        `Go to move start`;
+    const moves = history.map((step) => {
+      const desc = step.stepNumber === 0 ?
+        `Go to move start` :
+        `Go to move #${step.stepNumber}`;
 
-      const className = (step === current) ? `current-button` : `prev-button`
+      const className = (step === current) ? `current-button` : `prev-button`;
 
       return (
-        <li key={move}>
-          <button className={className} onClick={() => this.jumpTo(move)}>{desc}</button>
+        <li key={step.stepNumber}>
+          <button className={className} onClick={() => this.jumpTo(step.stepNumber)}>{desc}</button>
           <div>{step.coord}</div>
         </li>
       );
@@ -131,6 +140,7 @@ class Game extends React.Component {
         </div>
         <div className="game-info">
           <div>{status}</div>
+          <button onClick={ () => this.sortMovves() }>sort</button>
           <ol>{moves}</ol>
         </div>
       </div>
