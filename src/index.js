@@ -3,19 +3,21 @@ import ReactDOM from 'react-dom';
 import './index.css';
 
 function Square(props) {
+  const className = props.highlight ? `square highlight` : `square`;
   return (
-    <button className="square" onClick={ props.onClick }>
+    <button className={className} onClick={ props.onClick }>
       {props.value}
     </button>
   )
 }
 
 class Board extends React.Component {
-  renderSquare(i) {
+  renderSquare(i, highlight) {
     return <Square
       key={i}
       value={ this.props.squares[i] }
       onClick={ () => this.props.onClick(i) }
+      highlight={highlight}
     />;
   }
 
@@ -27,8 +29,9 @@ class Board extends React.Component {
     for(let i = 0; i < row; i++) {
       let squares = [];
       for(let j = 0; j < column; j++) {
-        let index = (i * row) + j;
-        let square = this.renderSquare(index);
+        const index = (i * row) + j;
+        const highlight = this.props.line.includes(index);
+        let square = this.renderSquare(index, highlight);
         squares.push(square);
       }
 
@@ -120,10 +123,10 @@ class Game extends React.Component {
       );
     });
 
-    const winner = calculateWinner(current.squares);
+    const result = calculateWinner(current.squares);
     let status;
-    if(winner) {
-      status = `Winner: ${winner}`;
+    if(result) {
+      status = `Winner: ${result.winner}`;
     } else {
       status = `Next player: ${this.state.xIsNext ? 'X' : 'O'}`;
     }
@@ -134,6 +137,7 @@ class Game extends React.Component {
           <Board
             squares={ current.squares }
             onClick={ (i) => this.handleClick(i) }
+            line={ result === null ? [] : result.line }
           />
         </div>
         <div className="game-info">
@@ -167,7 +171,10 @@ function calculateWinner(squares) {
   for (let i = 0; i < lines.length; i++) {
     const [a, b, c] = lines[i];
     if (squares[a] && squares[a] === squares[b] && squares[a] === squares[c]) {
-      return squares[a];
+      return {
+        winner: squares[a],
+        line: lines[i]
+      };
     }
   }
   return null;
