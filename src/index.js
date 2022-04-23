@@ -97,7 +97,7 @@ class Game extends React.Component {
     })
   }
 
-  sortMovves() {
+  sortMoves() {
     let history = this.state.history;
     this.setState({
       history: history.reverse()
@@ -146,7 +146,7 @@ class Game extends React.Component {
         </div>
         <div className="game-info">
           <div>{status}</div>
-          <button onClick={ () => this.sortMovves() }>sort</button>
+          <button onClick={ () => this.sortMoves() }>sort</button>
           <ol>{moves}</ol>
         </div>
       </div>
